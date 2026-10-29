@@ -1,0 +1,18 @@
+{
+  "name": "itdeal-sg-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "itDeal Sg — e-commerce frontend (Tailwind CSS v4 + Alpine.js), static HTML ready to port to a WordPress theme",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --dev"
+  },
+  "devDependencies": {
+    "@alpinejs/collapse": "^3.17.5",
+    "@alpinejs/focus": "^3.17.5",
+    "@tailwindcss/cli": "^4.3.3",
+    "alpinejs": "^3.17.5",
+    "tailwindcss": "^4.3.3"
+  }
+}
