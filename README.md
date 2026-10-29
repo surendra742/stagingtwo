@@ -11,7 +11,15 @@ npm run dev     # http://localhost:5173 — rebuilds on save
 npm run build   # production build into dist/ (minified CSS)
 ```
 
-Open `dist/index.html` or the dev server. `dist/styleguide.html` lists all design tokens and components.
+Open `dist/index.html` or the dev server.
+
+### Live preview (GitHub Pages)
+
+```bash
+npm run deploy  # builds and publishes dist/ to the gh-pages branch
+```
+
+The site is served at https://surendra742.github.io/stagingtwo/ (Settings → Pages → Source: *Deploy from a branch* → `gh-pages` / root). `dist/styleguide.html` lists all design tokens and components.
 
 ## Pages (71 generated)
 

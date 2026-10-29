@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "itDeal Sg — e-commerce frontend (Tailwind CSS v4 + Alpine.js), static HTML ready to port to a WordPress theme",
+  "description": "itDeal Sg \u2014 e-commerce frontend (Tailwind CSS v4 + Alpine.js), static HTML ready to port to a WordPress theme",
   "scripts": {
     "build": "node build.mjs",
-    "dev": "node build.mjs --dev"
+    "dev": "node build.mjs --dev",
+    "deploy": "node scripts/deploy.mjs"
   },
   "devDependencies": {
     "@alpinejs/collapse": "^3.17.5",
