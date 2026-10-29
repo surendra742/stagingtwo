@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en-SG">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Secure Checkout | itDeal Sg</title>
+<meta name="description" content="Shop genuine laptops, phones, audio and gaming at the best prices in Singapore. Free delivery over S$49 and 1-year local warranty.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap">
+<link rel="stylesheet" href="assets/css/app.css">
+<script src="assets/js/data.js"></script>
+<script defer src="assets/js/app.js"></script>
+<script defer src="assets/js/vendor/alpine-focus.min.js"></script>
+<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
+<script defer src="assets/js/vendor/alpine.min.js"></script>
+</head>
+<body x-data class=" ">
+<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-white">Skip to content</a>
+
+
+<header class="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
+  <div class="wrap flex h-16 items-center justify-between">
+    <a href="index.html" class="inline-flex shrink-0 items-center" aria-label="itDeal Sg — home"><img src="assets/img/logo.png" alt="itDeal Sg" class="h-7 w-auto" width="314" height="86"></a>
+    <p class="flex items-center gap-2 text-sm font-medium text-ink-2"><svg class="size-4 text-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Secure checkout</p>
+    <a href="cart.html" class="hidden text-sm font-medium text-muted hover:text-ink sm:block">Back to cart</a>
+  </div>
+</header>
+<main id="main">
+
+<div x-data="checkout" class="pb-28 lg:pb-16">
+  <!-- mobile summary toggle -->
+  <div class="border-b border-line bg-surface lg:hidden">
+    <button type="button" class="wrap flex h-14 items-center justify-between text-sm" @click="summaryOpen = !summaryOpen" :aria-expanded="summaryOpen">
+      <span class="flex items-center gap-2 font-semibold"><svg class="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> <span x-text="summaryOpen ? 'Hide order summary' : 'Show order summary'"></span><span class="transition" :class="summaryOpen && 'rotate-180'"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+      <span class="price text-base" x-text="$store.shop.money($store.shop.total(ship), true)"></span>
+    </button>
+    <div x-show="summaryOpen" x-collapse><div class="wrap pb-5">
+<div class="rounded-3xl bg-surface p-5 sm:p-6">
+  <h2 class="mb-4 text-lg font-bold">Order summary</h2>
+  <ul class="mb-4 space-y-3 border-b border-line pb-4">
+    <template x-for="line in $store.shop.cart" :key="line.key">
+      <li class="flex items-center gap-3">
+        <span class="relative shrink-0"><img :src="$store.shop.img($store.shop.p(line.id).img, 120)" alt="" class="size-14 rounded-xl bg-white object-cover"><span class="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-ink text-[10px] font-bold text-white" x-text="line.qty"></span></span>
+        <span class="min-w-0 flex-1"><span class="line-clamp-1 text-[13px] font-medium" x-text="$store.shop.p(line.id).title"></span><span class="block truncate text-xs text-muted" x-text="[line.variant, line.color].filter(Boolean).join(' · ')"></span></span>
+        <span class="price text-sm" x-text="$store.shop.money($store.shop.unit(line) * line.qty)"></span>
+      </li>
+    </template>
+  </ul>
+  
+<div x-data="{ code: '', err: '', open: false }" class="border-b border-line pb-4">
+  <template x-if="!$store.shop.coupon">
+    <div>
+      <button type="button" class="flex w-full items-center justify-between text-sm font-semibold" @click="open = !open" :aria-expanded="open">
+        <span class="flex items-center gap-2"><svg class="size-[18px] text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg> Apply a promo code</span>
+        <span class="transition" :class="open && 'rotate-180'"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+      </button>
+      <div x-show="open" x-collapse>
+        <form class="flex gap-2 pt-3" @submit.prevent="err = $store.shop.applyCoupon(code); if (!err) { code = ''; $store.ui.toast('Promo code applied', 'ticket') }">
+          <input x-model="code" placeholder="e.g. ITDEAL10" class="input h-11 flex-1 uppercase placeholder:normal-case" aria-label="Promo code">
+          <button class="btn btn-dark h-11">Apply</button>
+        </form>
+        <p x-show="err" x-text="err" class="mt-1.5 text-xs text-brand"></p>
+        <p class="mt-2 text-xs text-muted">Try <button type="button" class="font-mono font-bold text-ink" @click="code = 'ITDEAL10'">ITDEAL10</button> or <button type="button" class="font-mono font-bold text-ink" @click="code = 'MEGA11'">MEGA11</button></p>
+      </div>
+    </div>
+  </template>
+  <template x-if="$store.shop.coupon">
+    <div class="flex items-center gap-3 rounded-xl bg-success-50 px-3 py-2.5 text-success">
+      <svg class="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>
+      <div class="flex-1 text-[13px] leading-tight"><b class="font-mono" x-text="$store.shop.coupon"></b> applied<br><span class="text-xs opacity-80" x-text="$store.shop.couponLabel"></span></div>
+      <button type="button" class="text-xs font-semibold underline" @click="$store.shop.removeCoupon()">Remove</button>
+    </div>
+  </template>
+</div>
+  <div class="pt-4">
+<dl class="space-y-2.5 text-[14px]">
+  <div class="flex justify-between"><dt class="text-muted">Price (<span x-text="$store.shop.count"></span> items)</dt><dd class="tnum" x-text="$store.shop.money($store.shop.mrpTotal, true)"></dd></div>
+  <div class="flex justify-between" x-show="$store.shop.savings > 0"><dt class="text-muted">Discount</dt><dd class="tnum font-medium text-success" x-text="'−' + $store.shop.money($store.shop.savings, true)"></dd></div>
+  <div class="flex justify-between" x-show="$store.shop.couponOff > 0"><dt class="text-muted">Promo (<span x-text="$store.shop.coupon"></span>)</dt><dd class="tnum font-medium text-success" x-text="'−' + $store.shop.money($store.shop.couponOff, true)"></dd></div>
+  <div class="flex justify-between"><dt class="text-muted">Delivery</dt><dd class="tnum" x-text="$store.shop.shipping(ship) ? $store.shop.money($store.shop.shipping(ship), true) : 'Free'" :class="!$store.shop.shipping(ship) && 'font-medium text-success'"></dd></div>
+  <div class="flex items-baseline justify-between border-t border-line pt-3.5"><dt class="font-semibold">Total</dt><dd class="price text-2xl" x-text="$store.shop.money($store.shop.total(ship), true)"></dd></div>
+  <p class="text-right text-xs text-muted">Includes GST of <span class="tnum" x-text="$store.shop.money($store.shop.gst(ship), true)"></span></p>
+</dl>
+<p class="mt-4 rounded-xl bg-success-50 px-3 py-2.5 text-center text-[13px] font-semibold text-success" x-show="$store.shop.savings + $store.shop.couponOff > 0">🎉 You’re saving <span x-text="$store.shop.money($store.shop.savings + $store.shop.couponOff)"></span> on this order</p></div>
+</div></div></div>
+  </div>
+
+  <template x-if="!$store.shop.cart.length">
+    <div class="wrap">
+<div class="mx-auto max-w-sm py-16 text-center">
+  <span class="mx-auto grid size-20 place-items-center rounded-full bg-surface"><svg class="size-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+  <h2 class="mt-5 text-xl font-bold tracking-tight">Nothing to check out</h2>
+  <p class="mt-2 text-[15px] text-muted">Your cart is empty. Add a few things and come back.</p>
+  <a href="index.html" class="btn btn-dark mt-6">Back to shop</a>
+</div></div>
+  </template>
+
+  <div x-show="$store.shop.cart.length" class="wrap mt-6 grid grid-cols-[minmax(0,1fr)] gap-10 lg:mt-10 lg:grid-cols-[minmax(0,1fr)_420px]">
+    <div class="space-y-4">
+      <div>
+        <p class="eyebrow mb-3 text-center">Express checkout</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" class="btn h-12 rounded-xl bg-ink text-white hover:bg-ink-2"><svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76a4.24 4.24 0 0 0-3.58 2.18c-1.53 2.65-.39 6.57 1.1 8.72.73 1.05 1.6 2.23 2.73 2.19 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13a9.4 9.4 0 0 0 1.2-2.47 3.83 3.83 0 0 1-2.3-3.47ZM14.2 6.13A3.82 3.82 0 0 0 15.1 3.4a3.9 3.9 0 0 0-2.52 1.3 3.64 3.64 0 0 0-.92 2.63 3.22 3.22 0 0 0 2.54-1.2Z"/></svg>Pay</button>
+          <button type="button" class="btn h-12 rounded-xl border border-line-2 bg-white"><svg class="size-5" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.4-.18-2.05H12v3.88h5.38a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 2.98-4.32 2.98-7.35Z"/><path fill="#34A853" d="M12 22c2.7 0 4.96-.9 6.62-2.42l-3.24-2.5c-.9.6-2.04.95-3.38.95-2.6 0-4.8-1.76-5.59-4.12H3.07v2.6A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.41 13.91a6 6 0 0 1 0-3.82v-2.6H3.07a10 10 0 0 0 0 9.02l3.34-2.6Z"/><path fill="#EA4335" d="M12 5.97c1.47 0 2.79.5 3.83 1.5l2.87-2.87A9.97 9.97 0 0 0 3.07 7.49l3.34 2.6C7.2 7.73 9.4 5.97 12 5.97Z"/></svg>Pay</button>
+          <button type="button" class="btn h-12 rounded-xl bg-[#7c1a78] text-white hover:opacity-90">PayNow</button>
+        </div>
+        <div class="my-6 flex items-center gap-3 text-xs text-muted"><span class="h-px flex-1 bg-line"></span>or pay another way<span class="h-px flex-1 bg-line"></span></div>
+      </div>
+
+      
+<section id="step-1" class="scroll-mt-24 rounded-3xl border p-5 transition sm:p-6" :class="step === 1 ? 'border-ink' : 'border-line'">
+  <div class="flex items-center gap-3">
+    <span class="grid size-8 place-items-center rounded-full text-sm font-bold" :class="step > 1 ? 'bg-success text-white' : step === 1 ? 'bg-ink text-white' : 'bg-surface text-muted'">
+      <span x-show="step <= 1">1</span><span x-show="step > 1"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
+    </span>
+    <h2 class="flex-1 text-[17px] font-bold" :class="step < 1 && 'text-muted'">Contact</h2>
+    <button type="button" x-show="step > 1" class="text-sm font-semibold underline underline-offset-4" @click="edit(1)">Edit</button>
+  </div>
+  <div x-show="step > 1" class="mt-2 pl-11 text-sm text-muted"><span x-text="f.email"></span> · <span x-text="'+65 ' + f.phone"></span></div>
+  <div x-show="step === 1" x-collapse><div class="pt-5">
+        <p class="mb-4 text-sm text-muted">Have an account? <a href="login.html" class="link">Sign in</a> for faster checkout.</p>
+        <div class="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
+          
+<div class="">
+  <label for="f-email" class="field-label">Email</label>
+  <input id="f-email" x-model="f.email" class="input" :class="err.email && '!border-brand ring-4 !ring-brand/10'" type="email" autocomplete="email" placeholder="you@example.com">
+  <p x-show="err.email" x-text="err.email" class="mt-1 text-xs text-brand"></p>
+</div>
+          <div>
+            <label for="f-phone" class="field-label">Mobile number</label>
+            <div class="flex">
+              <span class="grid h-12 place-items-center rounded-l-xl border border-r-0 border-line-2 bg-surface px-3.5 text-[15px] font-medium">+65</span>
+              <input id="f-phone" x-model="f.phone" inputmode="tel" autocomplete="tel-national" placeholder="8123 4567" class="input rounded-l-none" :class="err.phone && '!border-brand'">
+            </div>
+            <p x-show="err.phone" x-text="err.phone" class="mt-1 text-xs text-brand"></p>
+          </div>
+        </div>
+        <label class="mt-4 flex items-center gap-2.5 text-sm text-ink-2"><input type="checkbox" class="check" checked> Email me order updates and exclusive deals</label>
+        <button type="button" class="btn btn-dark btn-lg mt-5 w-full sm:w-auto" @click="next(1)">Continue to delivery</button></div></div>
+</section>
+
+      
+<section id="step-2" class="scroll-mt-24 rounded-3xl border p-5 transition sm:p-6" :class="step === 2 ? 'border-ink' : 'border-line'">
+  <div class="flex items-center gap-3">
+    <span class="grid size-8 place-items-center rounded-full text-sm font-bold" :class="step > 2 ? 'bg-success text-white' : step === 2 ? 'bg-ink text-white' : 'bg-surface text-muted'">
+      <span x-show="step <= 2">2</span><span x-show="step > 2"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
+    </span>
+    <h2 class="flex-1 text-[17px] font-bold" :class="step < 2 && 'text-muted'">Delivery address</h2>
+    <button type="button" x-show="step > 2" class="text-sm font-semibold underline underline-offset-4" @click="edit(2)">Edit</button>
+  </div>
+  <div x-show="step > 2" class="mt-2 pl-11 text-sm text-muted"><span x-text="f.first + ' ' + f.last"></span>, <span x-text="f.block + ' ' + f.street + (f.unit ? ', #' + f.unit : '') + ', Singapore ' + f.postal"></span></div>
+  <div x-show="step === 2" x-collapse><div class="pt-5">
+        <div class="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
+          
+<div class="">
+  <label for="f-first" class="field-label">First name</label>
+  <input id="f-first" x-model="f.first" class="input" :class="err.first && '!border-brand ring-4 !ring-brand/10'" autocomplete="given-name">
+  <p x-show="err.first" x-text="err.first" class="mt-1 text-xs text-brand"></p>
+</div>
+          
+<div class="">
+  <label for="f-last" class="field-label">Last name</label>
+  <input id="f-last" x-model="f.last" class="input" :class="err.last && '!border-brand ring-4 !ring-brand/10'" autocomplete="family-name">
+  <p x-show="err.last" x-text="err.last" class="mt-1 text-xs text-brand"></p>
+</div>
+          <div class="sm:col-span-2">
+            <label for="f-postal" class="field-label">Postal code</label>
+            <div class="flex gap-2">
+              <input id="f-postal" x-model="f.postal" inputmode="numeric" maxlength="6" autocomplete="postal-code" placeholder="6-digit postal code" class="input flex-1" :class="err.postal && '!border-brand'" @input.debounce.400ms="f.postal.length === 6 && lookup()">
+              <button type="button" class="btn btn-outline h-12" @click="lookup()">Find address</button>
+            </div>
+            <p x-show="err.postal" x-text="err.postal" class="mt-1 text-xs text-brand"></p>
+            <p class="input-hint">We’ll fill in your street automatically. Try 238839.</p>
+          </div>
+          
+<div class="">
+  <label for="f-block" class="field-label">Block / House no.</label>
+  <input id="f-block" x-model="f.block" class="input" :class="err.block && '!border-brand ring-4 !ring-brand/10'" placeholder="e.g. 290">
+  <p x-show="err.block" x-text="err.block" class="mt-1 text-xs text-brand"></p>
+</div>
+          
+<div class="">
+  <label for="f-street" class="field-label">Street name</label>
+  <input id="f-street" x-model="f.street" class="input" :class="err.street && '!border-brand ring-4 !ring-brand/10'" autocomplete="address-line1">
+  <p x-show="err.street" x-text="err.street" class="mt-1 text-xs text-brand"></p>
+</div>
+          
+<div class="">
+  <label for="f-unit" class="field-label">Unit no. (optional)</label>
+  <input id="f-unit" x-model="f.unit" class="input" :class="err.unit && '!border-brand ring-4 !ring-brand/10'" placeholder="e.g. 12-345">
+  <p x-show="err.unit" x-text="err.unit" class="mt-1 text-xs text-brand"></p>
+</div>
+          
+<div class="">
+  <label for="f-building" class="field-label">Building name (optional)</label>
+  <input id="f-building" x-model="f.building" class="input" :class="err.building && '!border-brand ring-4 !ring-brand/10'" autocomplete="address-line2">
+  <p x-show="err.building" x-text="err.building" class="mt-1 text-xs text-brand"></p>
+</div>
+        </div>
+        <button type="button" class="btn btn-dark btn-lg mt-5 w-full sm:w-auto" @click="next(2)">Continue to shipping</button></div></div>
+</section>
+
+      
+<section id="step-3" class="scroll-mt-24 rounded-3xl border p-5 transition sm:p-6" :class="step === 3 ? 'border-ink' : 'border-line'">
+  <div class="flex items-center gap-3">
+    <span class="grid size-8 place-items-center rounded-full text-sm font-bold" :class="step > 3 ? 'bg-success text-white' : step === 3 ? 'bg-ink text-white' : 'bg-surface text-muted'">
+      <span x-show="step <= 3">3</span><span x-show="step > 3"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
+    </span>
+    <h2 class="flex-1 text-[17px] font-bold" :class="step < 3 && 'text-muted'">Delivery method</h2>
+    <button type="button" x-show="step > 3" class="text-sm font-semibold underline underline-offset-4" @click="edit(3)">Edit</button>
+  </div>
+  <div x-show="step > 3" class="mt-2 pl-11 text-sm text-muted"><span x-text="{ standard: 'Standard delivery', express: 'Express — next working day', sameday: 'Same-day delivery', collect: 'Self-collect at HarbourFront' }[ship]"></span></div>
+  <div x-show="step === 3" x-collapse><div class="pt-5">
+        <div class="space-y-2.5">
+          
+<label class="flex cursor-pointer items-center gap-3.5 rounded-2xl border p-4 transition" :class="ship === 'standard' ? 'border-ink bg-ink/[0.02] ring-1 ring-ink' : 'border-line-2 hover:border-ink-2'">
+  <input type="radio" class="radio" value="standard" x-model="ship">
+  <span class="flex-1"><span class="block text-[14.5px] font-semibold">Standard delivery</span><span class="block text-xs text-muted">2–3 working days</span></span>
+  <span class="text-sm font-semibold" x-text="$store.shop.subtotal >= 49 ? 'Free' : 'S$4.99'"></span>
+</label>
+          
+<label class="flex cursor-pointer items-center gap-3.5 rounded-2xl border p-4 transition" :class="ship === 'express' ? 'border-ink bg-ink/[0.02] ring-1 ring-ink' : 'border-line-2 hover:border-ink-2'">
+  <input type="radio" class="radio" value="express" x-model="ship">
+  <span class="flex-1"><span class="block text-[14.5px] font-semibold">Express</span><span class="block text-xs text-muted">Next working day</span></span>
+  <span class="text-sm font-semibold">S$8.90</span>
+</label>
+          
+<label class="flex cursor-pointer items-center gap-3.5 rounded-2xl border p-4 transition" :class="ship === 'sameday' ? 'border-ink bg-ink/[0.02] ring-1 ring-ink' : 'border-line-2 hover:border-ink-2'">
+  <input type="radio" class="radio" value="sameday" x-model="ship">
+  <span class="flex-1"><span class="block text-[14.5px] font-semibold">Same-day</span><span class="block text-xs text-muted">Order before 2pm, delivered by 10pm</span></span>
+  <span class="text-sm font-semibold">S$14.90</span>
+</label>
+          
+<label class="flex cursor-pointer items-center gap-3.5 rounded-2xl border p-4 transition" :class="ship === 'collect' ? 'border-ink bg-ink/[0.02] ring-1 ring-ink' : 'border-line-2 hover:border-ink-2'">
+  <input type="radio" class="radio" value="collect" x-model="ship">
+  <span class="flex-1"><span class="block text-[14.5px] font-semibold">Self-collect</span><span class="block text-xs text-muted">itDeal HarbourFront · ready in 2 hours</span></span>
+  <span class="text-sm font-semibold text-success">Free</span>
+</label>
+        </div>
+        <button type="button" class="btn btn-dark btn-lg mt-5 w-full sm:w-auto" @click="next(3)">Continue to payment</button></div></div>
+</section>
+
+      
+<section id="step-4" class="scroll-mt-24 rounded-3xl border p-5 transition sm:p-6" :class="step === 4 ? 'border-ink' : 'border-line'">
+  <div class="flex items-center gap-3">
+    <span class="grid size-8 place-items-center rounded-full text-sm font-bold" :class="step > 4 ? 'bg-success text-white' : step === 4 ? 'bg-ink text-white' : 'bg-surface text-muted'">
+      <span x-show="step <= 4">4</span><span x-show="step > 4"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
+    </span>
+    <h2 class="flex-1 text-[17px] font-bold" :class="step < 4 && 'text-muted'">Payment</h2>
+    <button type="button" x-show="step > 4" class="text-sm font-semibold underline underline-offset-4" @click="edit(4)">Edit</button>
+  </div>
+  <div x-show="step > 4" class="mt-2 pl-11 text-sm text-muted"></div>
+  <div x-show="step === 4" x-collapse><div class="pt-5">
+        <div class="space-y-2.5">
+          
+<label class="flex cursor-pointer items-center gap-3.5 rounded-2xl border p-4 transition" :class="pay === 'card' ? 'border-ink bg-ink/[0.02] ring-1 ring-ink' : 'border-line-2 hover:border-ink-2'">
+  <input type="radio" class="radio" value="card" x-model="pay">
+  <span class="flex-1"><span class="block text-[14.5px] font-semibold">Credit / debit card</span><span class="block text-xs text-muted">Visa, Mastercard, AMEX</span></span>
+  <span class="flex gap-1"><span class="rounded border border-line px-1.5 py-0.5 text-[9px] font-bold">VISA</span><span class="rounded border border-line px-1.5 py-0.5 text-[9px] font-bold">MC</span><span class="rounded border border-line px-1.5 py-0.5 text-[9px] font-bold">AMEX</span></span>
+</label>
+          <div x-show="pay === 'card'" x-collapse>
+            <div class="grid grid-cols-2 gap-3 rounded-2xl bg-surface p-4">
+              <div class="col-span-2">
+                <label for="f-card" class="field-label">Card number</label>
+                <div class="relative"><input id="f-card" x-model="f.card" @input="fmtCard()" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" class="input bg-white pr-11" :class="err.card && '!border-brand'"><span class="absolute right-4 top-1/2 -translate-y-1/2 text-muted"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span></div>
+                <p x-show="err.card" x-text="err.card" class="mt-1 text-xs text-brand"></p>
+              </div>
+              <div><label for="f-exp" class="field-label">Expiry</label><input id="f-exp" x-model="f.exp" @input="fmtExp()" inputmode="numeric" autocomplete="cc-exp" placeholder="MM / YY" class="input bg-white" :class="err.exp && '!border-brand'"></div>
+              <div><label for="f-cvc" class="field-label">CVC</label><input id="f-cvc" x-model="f.cvc" inputmode="numeric" maxlength="4" autocomplete="cc-csc" placeholder="123" class="input bg-white" :class="err.cvc && '!border-brand'"></div>
+              <label class="col-span-2 flex items-center gap-2.5 text-sm text-ink-2"><input type="checkbox" class="check" x-model="billingSame"> Billing address same as delivery</label>
+            </div>
+          </div>
+          
+<label class="flex cursor-pointer items-center gap-3.5 rounded-2xl border p-4 transition" :class="pay === 'paynow' ? 'border-ink bg-ink/[0.02] ring-1 ring-ink' : 'border-line-2 hover:border-ink-2'">
+  <input type="radio" class="radio" value="paynow" x-model="pay">
+  <span class="flex-1"><span class="block text-[14.5px] font-semibold">PayNow</span><span class="block text-xs text-muted">Scan a QR with any Singapore banking app</span></span>
+  <svg class="size-5 text-[#7c1a78]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3M21 21v.01M12 7v3a2 2 0 0 1-2 2H7M3 12h.01M12 3h.01M12 16v.01M16 12h1M21 12v.01M12 21v-1"/></svg>
+</label>
+          <p x-show="pay === 'paynow'" x-collapse class="rounded-2xl bg-surface p-4 text-[13px] text-ink-2">You’ll see a PayNow QR code after placing your order. It expires in 15 minutes.</p>
+          
+<label class="flex cursor-pointer items-center gap-3.5 rounded-2xl border p-4 transition" :class="pay === 'grabpay' ? 'border-ink bg-ink/[0.02] ring-1 ring-ink' : 'border-line-2 hover:border-ink-2'">
+  <input type="radio" class="radio" value="grabpay" x-model="pay">
+  <span class="flex-1"><span class="block text-[14.5px] font-semibold">GrabPay</span><span class="block text-xs text-muted">Pay with your GrabPay wallet</span></span>
+  <span class="rounded bg-[#00b14f] px-1.5 py-0.5 text-[9px] font-bold text-white">Grab</span>
+</label>
+        </div>
+        <p class="mt-4 flex items-center gap-2 text-xs text-muted"><svg class="size-4 text-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg> Payments are encrypted and processed securely. We never store your card details.</p></div></div>
+</section>
+
+      <div class="hidden lg:block">
+        <button type="button" class="btn btn-primary btn-lg w-full" :disabled="step < 4 || placing" @click="place()">
+          <span x-show="!placing" class="flex items-center gap-2"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Place order · <span x-text="$store.shop.money($store.shop.total(ship), true)"></span></span>
+          <span x-show="placing" class="flex items-center gap-2"><span class="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span> Placing your order…</span>
+        </button>
+        <p class="mt-3 text-center text-xs text-muted">By placing your order you agree to our <a href="#" class="underline">Terms</a> and <a href="#" class="underline">Privacy policy</a>.</p>
+      </div>
+    </div>
+
+    <aside class="hidden lg:sticky lg:top-24 lg:block lg:self-start">
+<div class="rounded-3xl bg-surface p-5 sm:p-6">
+  <h2 class="mb-4 text-lg font-bold">Order summary</h2>
+  <ul class="mb-4 space-y-3 border-b border-line pb-4">
+    <template x-for="line in $store.shop.cart" :key="line.key">
+      <li class="flex items-center gap-3">
+        <span class="relative shrink-0"><img :src="$store.shop.img($store.shop.p(line.id).img, 120)" alt="" class="size-14 rounded-xl bg-white object-cover"><span class="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-ink text-[10px] font-bold text-white" x-text="line.qty"></span></span>
+        <span class="min-w-0 flex-1"><span class="line-clamp-1 text-[13px] font-medium" x-text="$store.shop.p(line.id).title"></span><span class="block truncate text-xs text-muted" x-text="[line.variant, line.color].filter(Boolean).join(' · ')"></span></span>
+        <span class="price text-sm" x-text="$store.shop.money($store.shop.unit(line) * line.qty)"></span>
+      </li>
+    </template>
+  </ul>
+  
+<div x-data="{ code: '', err: '', open: false }" class="border-b border-line pb-4">
+  <template x-if="!$store.shop.coupon">
+    <div>
+      <button type="button" class="flex w-full items-center justify-between text-sm font-semibold" @click="open = !open" :aria-expanded="open">
+        <span class="flex items-center gap-2"><svg class="size-[18px] text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg> Apply a promo code</span>
+        <span class="transition" :class="open && 'rotate-180'"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+      </button>
+      <div x-show="open" x-collapse>
+        <form class="flex gap-2 pt-3" @submit.prevent="err = $store.shop.applyCoupon(code); if (!err) { code = ''; $store.ui.toast('Promo code applied', 'ticket') }">
+          <input x-model="code" placeholder="e.g. ITDEAL10" class="input h-11 flex-1 uppercase placeholder:normal-case" aria-label="Promo code">
+          <button class="btn btn-dark h-11">Apply</button>
+        </form>
+        <p x-show="err" x-text="err" class="mt-1.5 text-xs text-brand"></p>
+        <p class="mt-2 text-xs text-muted">Try <button type="button" class="font-mono font-bold text-ink" @click="code = 'ITDEAL10'">ITDEAL10</button> or <button type="button" class="font-mono font-bold text-ink" @click="code = 'MEGA11'">MEGA11</button></p>
+      </div>
+    </div>
+  </template>
+  <template x-if="$store.shop.coupon">
+    <div class="flex items-center gap-3 rounded-xl bg-success-50 px-3 py-2.5 text-success">
+      <svg class="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>
+      <div class="flex-1 text-[13px] leading-tight"><b class="font-mono" x-text="$store.shop.coupon"></b> applied<br><span class="text-xs opacity-80" x-text="$store.shop.couponLabel"></span></div>
+      <button type="button" class="text-xs font-semibold underline" @click="$store.shop.removeCoupon()">Remove</button>
+    </div>
+  </template>
+</div>
+  <div class="pt-4">
+<dl class="space-y-2.5 text-[14px]">
+  <div class="flex justify-between"><dt class="text-muted">Price (<span x-text="$store.shop.count"></span> items)</dt><dd class="tnum" x-text="$store.shop.money($store.shop.mrpTotal, true)"></dd></div>
+  <div class="flex justify-between" x-show="$store.shop.savings > 0"><dt class="text-muted">Discount</dt><dd class="tnum font-medium text-success" x-text="'−' + $store.shop.money($store.shop.savings, true)"></dd></div>
+  <div class="flex justify-between" x-show="$store.shop.couponOff > 0"><dt class="text-muted">Promo (<span x-text="$store.shop.coupon"></span>)</dt><dd class="tnum font-medium text-success" x-text="'−' + $store.shop.money($store.shop.couponOff, true)"></dd></div>
+  <div class="flex justify-between"><dt class="text-muted">Delivery</dt><dd class="tnum" x-text="$store.shop.shipping(ship) ? $store.shop.money($store.shop.shipping(ship), true) : 'Free'" :class="!$store.shop.shipping(ship) && 'font-medium text-success'"></dd></div>
+  <div class="flex items-baseline justify-between border-t border-line pt-3.5"><dt class="font-semibold">Total</dt><dd class="price text-2xl" x-text="$store.shop.money($store.shop.total(ship), true)"></dd></div>
+  <p class="text-right text-xs text-muted">Includes GST of <span class="tnum" x-text="$store.shop.money($store.shop.gst(ship), true)"></span></p>
+</dl>
+<p class="mt-4 rounded-xl bg-success-50 px-3 py-2.5 text-center text-[13px] font-semibold text-success" x-show="$store.shop.savings + $store.shop.couponOff > 0">🎉 You’re saving <span x-text="$store.shop.money($store.shop.savings + $store.shop.couponOff)"></span> on this order</p></div>
+</div></aside>
+  </div>
+
+  <div x-show="$store.shop.cart.length && step === 4" x-transition.opacity class="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 pb-safe shadow-bar backdrop-blur lg:hidden">
+    <div class="px-4 py-3">
+      <button type="button" class="btn btn-primary btn-lg w-full" :disabled="placing" @click="place()">
+        <span x-show="!placing" class="flex items-center gap-2"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span x-text="'Place order · ' + $store.shop.money($store.shop.total(ship), true)"></span></span>
+        <span x-show="placing" class="flex items-center gap-2"><span class="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span> Placing order…</span>
+      </button>
+    </div>
+  </div>
+</div>
+</main>
+
+
+
+
+
+
+<div x-cloak x-show="$store.ui.chat" @keydown.escape.window="$store.ui.chat = false">
+  <div class="sheet-backdrop sm:hidden" x-show="$store.ui.chat" x-transition.opacity @click="$store.ui.chat = false"></div>
+  <section x-data="chat" x-show="$store.ui.chat" x-transition:enter="transition duration-300 ease-out-quint" x-transition:enter-start="translate-y-6 opacity-0" x-transition:leave="transition duration-150" x-transition:leave-end="translate-y-6 opacity-0"
+    class="fixed inset-x-0 bottom-0 z-[70] flex h-[78vh] flex-col overflow-hidden rounded-t-3xl bg-white shadow-pop sm:inset-x-auto sm:bottom-6 sm:right-6 sm:h-[600px] sm:w-[400px] sm:rounded-3xl sm:border sm:border-line" aria-label="Chat with us">
+    <header class="flex items-center gap-3 bg-ink px-5 py-4 text-white">
+      <span class="relative grid size-10 place-items-center rounded-full bg-brand text-sm font-bold">D<span class="absolute -bottom-0.5 -right-0.5 size-3 rounded-full bg-[#22c55e] ring-2 ring-ink"></span></span>
+      <div class="flex-1"><p class="text-[15px] font-semibold">Dee · itDeal Support</p><p class="text-xs text-white/65">Typically replies in under 2 min</p></div>
+      <button type="button" class="grid size-9 place-items-center rounded-full hover:bg-white/10" aria-label="Close chat" @click="$store.ui.chat = false"><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </header>
+    <div x-ref="log" class="flex-1 space-y-3 overflow-y-auto bg-surface/60 px-4 py-5">
+      <template x-for="(m, k) in log" :key="k">
+        <div class="flex" :class="m.me ? 'justify-end' : 'justify-start'">
+          <p class="max-w-[82%] rounded-2xl px-3.5 py-2.5 text-[14px] leading-relaxed" :class="m.me ? 'rounded-br-md bg-ink text-white' : 'rounded-bl-md bg-white text-ink shadow-sm'" x-text="m.t"></p>
+        </div>
+      </template>
+      <div x-show="typing" class="flex"><span class="flex gap-1 rounded-2xl rounded-bl-md bg-white px-4 py-3.5 shadow-sm"><i class="size-1.5 animate-bounce rounded-full bg-subtle"></i><i class="size-1.5 animate-bounce rounded-full bg-subtle [animation-delay:.15s]"></i><i class="size-1.5 animate-bounce rounded-full bg-subtle [animation-delay:.3s]"></i></span></div>
+      <div class="flex flex-wrap gap-2 pt-1" x-show="log.length < 3">
+        <template x-for="q in quick" :key="q"><button type="button" class="chip h-8 text-[12.5px]" @click="send(q)" x-text="q"></button></template>
+      </div>
+    </div>
+    <form class="flex items-center gap-2 border-t border-line p-3 pb-safe" @submit.prevent="send()">
+      <input x-model="msg" placeholder="Type your message…" class="h-11 flex-1 rounded-full bg-surface px-4 text-[15px] outline-none focus:ring-2 focus:ring-ink/10" aria-label="Message">
+      <button class="grid size-11 place-items-center rounded-full bg-brand text-white transition hover:bg-brand-600" aria-label="Send"><svg class="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.54 21.69a.5.5 0 0 0 .94-.03l6.5-19a.5.5 0 0 0-.64-.63l-19 6.5a.5.5 0 0 0-.02.93l7.93 3.18a2 2 0 0 1 1.11 1.11z"/><path d="m21.85 2.15-10.94 10.94"/></svg></button>
+    </form>
+  </section>
+</div>
+
+
+<div x-cloak x-show="$store.ui.toastOn" x-transition:enter="transition duration-300 ease-out-quint" x-transition:enter-start="translate-y-4 opacity-0" x-transition:leave="transition duration-200" x-transition:leave-end="translate-y-4 opacity-0"
+  class="pointer-events-none fixed inset-x-0 bottom-[88px] z-[80] flex justify-center px-4 lg:bottom-8" role="status" aria-live="polite">
+  <p class="flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-[13px] font-medium text-white shadow-pop">
+    <span class="grid size-5 place-items-center rounded-full bg-white/15"><svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span x-text="$store.ui.toastMsg"></span>
+  </p>
+</div>
+</body>
+</html>
