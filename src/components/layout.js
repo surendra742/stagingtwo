@@ -199,7 +199,15 @@ function siteHeader({ minimal = false } = {}) {
     <div class="wrap flex h-14 items-center gap-1">
       <button type="button" class="icon-btn -ml-2" aria-label="Open menu" @click="$store.ui.menu = true">${icon('menu', 'size-6')}</button>
       ${logo('h-[26px]')}
-      <div class="ml-auto flex items-center">
+      <!-- delivery address fills the gap between logo and icons -->
+      <a href="account.html#addresses" class="mx-auto flex min-w-0 items-center gap-1 rounded-lg px-1.5 py-1 active:bg-surface" aria-label="Choose delivery address">
+        ${icon('pin', 'size-[18px] shrink-0 text-brand', 2)}
+        <span class="min-w-0 leading-tight">
+          <span class="block truncate text-[10.5px] text-muted" x-text="$store.shop.address ? 'Deliver to ' + $store.shop.address.name.split(' ')[0] : 'Hello'">Hello</span>
+          <span class="flex items-center gap-0.5 text-[12.5px] font-semibold text-ink"><span class="truncate" x-text="$store.shop.address ? $store.shop.address.label + ' · ' + $store.shop.address.postal : 'Select address'">Select address</span>${icon('chevron-down', 'size-3 shrink-0', 2.4)}</span>
+        </span>
+      </a>
+      <div class="flex shrink-0 items-center">
         <a href="account.html" class="icon-btn" aria-label="Account">${icon('user', 'size-[22px]')}</a>
         <a href="cart.html" class="icon-btn -mr-2" aria-label="Cart">
           ${icon('bag', 'size-[22px]')}
